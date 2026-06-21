@@ -50,20 +50,20 @@ class FitbitNetworkManager {
     // MARK: - PKCE & OAuth Flow
     
     func getOAuthURL(codeChallenge: String) -> URL? {
-        // Google Health API requires fully qualified scope URLs
-        let scopes = [
-            "https://www.googleapis.com/auth/fitbit.sleep.read",
-            "https://www.googleapis.com/auth/fitbit.activity.read",
-            "https://www.googleapis.com/auth/fitbit.heartrate.read"
-        ].joined(separator: " ")
-        
-        let encodedScopes = scopes.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
-        let redirectURI = "\(reversedClientID):/oauth2redirect"
-        
-        let urlString = "https://accounts.google.com/o/oauth2/v2/auth?response_type=code&client_id=\(clientID)&redirect_uri=\(redirectURI)&scope=\(encodedScopes)&code_challenge=\(codeChallenge)&code_challenge_method=S256"
-        
-        return URL(string: urlString)
-    }
+            // Updated Google Health API v4 Scopes
+            let scopes = [
+                "https://www.googleapis.com/auth/googlehealth.sleep.readonly",
+                "https://www.googleapis.com/auth/googlehealth.activity_and_fitness.readonly",
+                "https://www.googleapis.com/auth/googlehealth.health_metrics_and_measurements.readonly"
+            ].joined(separator: " ")
+            
+            let encodedScopes = scopes.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+            let redirectURI = "\(reversedClientID):/oauth2redirect"
+            
+            let urlString = "https://accounts.google.com/o/oauth2/v2/auth?response_type=code&client_id=\(clientID)&redirect_uri=\(redirectURI)&scope=\(encodedScopes)&code_challenge=\(codeChallenge)&code_challenge_method=S256"
+            
+            return URL(string: urlString)
+        }
     
     func exchangeCodeForToken(authCode: String, codeVerifier: String) async throws {
         guard let url = URL(string: "https://oauth2.googleapis.com/token") else { throw URLError(.badURL) }

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F6A84A042FE88E1700D0F263 /* Secrets.plist in Resources */ = {isa = PBXBuildFile; fileRef = F6A84A032FE88E1700D0F263 /* Secrets.plist */; };
 		F6F9B67D2FE7DFA700024402 /* .gitignore in Sources */ = {isa = PBXBuildFile; fileRef = F6F9B67B2FE7DF9F00024402 /* .gitignore */; };
 /* End PBXBuildFile section */
 
@@ -31,6 +32,7 @@
 		F617992B2FE7D7DE00488720 /* Google2AppleHealthSync.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Google2AppleHealthSync.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F61799382FE7D7E100488720 /* Google2AppleHealthSyncTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Google2AppleHealthSyncTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F61799422FE7D7E100488720 /* Google2AppleHealthSyncUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Google2AppleHealthSyncUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		F6A84A032FE88E1700D0F263 /* Secrets.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Secrets.plist; sourceTree = "<group>"; };
 		F6F9B67B2FE7DF9F00024402 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -94,6 +96,7 @@
 			isa = PBXGroup;
 			children = (
 				F6F9B67B2FE7DF9F00024402 /* .gitignore */,
+				F6A84A032FE88E1700D0F263 /* Secrets.plist */,
 				F617992D2FE7D7DE00488720 /* Google2AppleHealthSync */,
 				F617993B2FE7D7E100488720 /* Google2AppleHealthSyncTests */,
 				F61799452FE7D7E100488720 /* Google2AppleHealthSyncUITests */,
@@ -231,6 +234,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F6A84A042FE88E1700D0F263 /* Secrets.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -20,7 +20,7 @@ struct HRVValue: Codable { let dailyRmssd: Double }
 // MARK: - Network Manager
 class FitbitNetworkManager {
     static let shared = FitbitNetworkManager()
-    private let baseURL = "https://api.fitbit.com/1.2/user/-/"
+    private let baseURL = "https://health.googleapis.com/v4/users/me/dataTypes/"
     
     // Dynamically load keys from Secrets.plist
     private var clientID: String {
@@ -97,35 +97,51 @@ class FitbitNetworkManager {
     }
     
     // MARK: - Data Fetching
-    
-    private func fetch<T: Codable>(endpoint: String) async throws -> T {
-        guard let token = accessToken else { throw URLError(.userAuthenticationRequired) }
-        guard let url = URL(string: baseURL + endpoint) else { throw URLError(.badURL) }
-        
-        var request = URLRequest(url: url)
-        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        
-        let (data, response) = try await URLSession.shared.data(for: request)
-        
-        guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
-            throw URLError(.badServerResponse)
+    private func fetchRawJSON(endpoint: String) async throws -> String {
+            guard let token = accessToken else { throw URLError(.userAuthenticationRequired) }
+            guard let url = URL(string: baseURL + endpoint) else { throw URLError(.badURL) }
+            
+            var request = URLRequest(url: url)
+            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+            
+            let (data, response) = try await URLSession.shared.data(for: request)
+            
+            guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
+                let errorMsg = String(data: data, encoding: .utf8) ?? "Unknown Error"
+                print("Google API Error [\( (response as? HTTPURLResponse)?.statusCode ?? 0 )]: \(errorMsg)")
+                throw URLError(.badServerResponse)
+            }
+            
+            return String(data: data, encoding: .utf8) ?? ""
         }
-        return try JSONDecoder().decode(T.self, from: data)
-    }
+        
+        // 3. Hit the new dataPoints endpoints
+        func fetchSleepData(for date: Date) async throws -> FitbitSleepResponse {
+            // Google uses kebab-case for data types in the URL
+            let endpoint = "sleep/dataPoints"
+            
+            let rawJSON = try await fetchRawJSON(endpoint: endpoint)
+            print("\n==== 🟢 GOOGLE HEALTH SLEEP JSON ====")
+            print(rawJSON)
+            print("=====================================\n")
+            
+            // Return an empty legacy object temporarily so HealthKitManager doesn't crash
+            return FitbitSleepResponse(sleep: [])
+        }
+        
+        func fetchHRVData(for date: Date) async throws -> FitbitHRVResponse {
+            // HRV is now mapped to daily-heart-rate-variability
+            let endpoint = "daily-heart-rate-variability/dataPoints"
+            
+            let rawJSON = try await fetchRawJSON(endpoint: endpoint)
+            print("\n==== 🟢 GOOGLE HEALTH HRV JSON ====")
+            print(rawJSON)
+            print("===================================\n")
+            
+            // Return an empty legacy object temporarily
+            return FitbitHRVResponse(hrv: [])
+        }
     
-    func fetchSleepData(for date: Date) async throws -> FitbitSleepResponse {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd"
-        let dateString = formatter.string(from: date)
-        return try await fetch(endpoint: "sleep/date/\(dateString).json")
-    }
-    
-    func fetchHRVData(for date: Date) async throws -> FitbitHRVResponse {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd"
-        let dateString = formatter.string(from: date)
-        return try await fetch(endpoint: "hrv/date/\(dateString).json")
-    }
 }
 
 // MARK: - PKCE Crypto Helpers
